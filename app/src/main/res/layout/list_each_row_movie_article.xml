@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout>
+    <data>
+    <variable
+        name="movie"
+        type="com.snipex.shantu.androidarchitecturecomponentsmvvmretrofitwithjava.model.Article" />
+    </data>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@android:color/black">
@@ -8,6 +14,7 @@
         android:id="@+id/imgViewCover"
         android:layout_width="120dp"
         android:layout_height="160dp"
+        loadImage="@{movie.urlToImage}"
         android:layout_marginBottom="5dp"
         android:scaleType="centerCrop" />
 
@@ -23,6 +30,7 @@
             android:id="@+id/tvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@{movie.title}"
             android:textColor="@android:color/white"
             android:textStyle="bold" />
 
@@ -30,6 +38,7 @@
             android:id="@+id/tvAuthorAndPublishedAt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@{movie.author}"
             android:textColor="@android:color/darker_gray"
             android:textStyle="italic" />
 
@@ -39,8 +48,11 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="2"
+            android:text="@{movie.description}"
             android:textColor="@android:color/darker_gray" />
 
     </LinearLayout>
 
 </RelativeLayout>
+
+</layout>

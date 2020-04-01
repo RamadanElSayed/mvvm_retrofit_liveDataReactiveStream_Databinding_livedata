@@ -1,15 +1,19 @@
 package com.snipex.shantu.androidarchitecturecomponentsmvvmretrofitwithjava.view;
 
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.snipex.shantu.androidarchitecturecomponentsmvvmretrofitwithjava.R;
 import com.snipex.shantu.androidarchitecturecomponentsmvvmretrofitwithjava.adapter.MovieArticleAdapter;
+import com.snipex.shantu.androidarchitecturecomponentsmvvmretrofitwithjava.databinding.ActivityMainBinding;
 import com.snipex.shantu.androidarchitecturecomponentsmvvmretrofitwithjava.model.Article;
 import com.snipex.shantu.androidarchitecturecomponentsmvvmretrofitwithjava.view_model.ArticleViewModel;
 
@@ -24,14 +28,14 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayoutManager layoutManager;
     private MovieArticleAdapter adapter;
     private ArrayList<Article> articleArrayList = new ArrayList<>();
-    ArticleViewModel articleViewModel;
+    private ArticleViewModel articleViewModel;
+    private ActivityMainBinding activityMainBinding;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
+        activityMainBinding= DataBindingUtil.setContentView(this,R.layout.activity_main);
         initialization();
 
         getMovieArticles();
@@ -43,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
      * @param @null
      */
     private void initialization() {
-        progress_circular_movie_article = (ProgressBar) findViewById(R.id.progress_circular_movie_article);
-        my_recycler_view = (RecyclerView) findViewById(R.id.my_recycler_view);
+        progress_circular_movie_article = activityMainBinding.progressCircularMovieArticle;
+        my_recycler_view = activityMainBinding.myRecyclerView;
 
         // use a linear layout manager
         layoutManager = new LinearLayoutManager(MainActivity.this);
@@ -55,11 +59,10 @@ public class MainActivity extends AppCompatActivity {
         my_recycler_view.setHasFixedSize(true);
 
         // adapter
-        adapter = new MovieArticleAdapter(MainActivity.this, articleArrayList);
-        my_recycler_view.setAdapter(adapter);
-
+        adapter = new MovieArticleAdapter( articleArrayList);
+        activityMainBinding.setAdapter(adapter);
         // View Model
-        articleViewModel = ViewModelProviders.of(this).get(ArticleViewModel.class);
+        articleViewModel = new ViewModelProvider(this).get(ArticleViewModel.class);
     }
 
     /**
@@ -69,10 +72,12 @@ public class MainActivity extends AppCompatActivity {
      */
     private void getMovieArticles() {
         articleViewModel.getArticleResponseLiveData().observe(this, articleResponse -> {
-            if (articleResponse != null) {
+            if (articleResponse != null &&articleResponse.getTotalResults()!=null) {
 
                 progress_circular_movie_article.setVisibility(View.GONE);
                 List<Article> articles = articleResponse.getArticles();
+                if(articles.size()<=0)
+                    Toast.makeText(this, "Error connection", Toast.LENGTH_SHORT).show();
                 articleArrayList.addAll(articles);
                 adapter.notifyDataSetChanged();
             }
